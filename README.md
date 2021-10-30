@@ -1,5 +1,7 @@
 # qdcrop
 
+[![Build](https://github.com/nil-vr/qdcrop/actions/workflows/build.yml/badge.svg)](https://github.com/nil-vr/qdcrop/actions/workflows/build.yml)
+
 Questダンス集会の写真が好きです。でも輪郭が好きません。qdcropは輪郭を外します。
 
 I like pictures from Questダンス集会, but I don't like the border. qdcrop removes the border.
