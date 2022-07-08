@@ -206,15 +206,29 @@ fn crop<PI: AsRef<Path>, PO: AsRef<Path>>(input: PI, output: PO) -> anyhow::Resu
         find_nearest_to_corner(&threshold, false, true).unwrap(),
     ];
 
-    let height = std::cmp::max(closest[3].1 - closest[0].1, closest[2].1 - closest[1].1);
-    let width = std::cmp::max(closest[1].0 - closest[0].0, closest[2].0 - closest[3].0);
-    let height_aspect = 9 * width / 16;
-    let width_aspect = 16 * height / 9;
+    let height = std::cmp::max(closest[3].1 - closest[0].1, closest[2].1 - closest[1].1) as f64;
+    let width = std::cmp::max(closest[1].0 - closest[0].0, closest[2].0 - closest[3].0) as f64;
+    let height_aspect = 9.0 * width / 16.0;
+    let width_aspect = 16.0 * height / 9.0;
     let (width, height) = if height_aspect < height {
         (width_aspect, height)
     } else {
         (width, height_aspect)
     };
+
+    const MAX_HEIGHT: f64 = 1024.0;
+    const MAX_WIDTH: f64 = 1024.0 * 16.0 / 9.0;
+    let height_ratio = MAX_HEIGHT / height;
+    let width_ratio = MAX_WIDTH / width;
+    let (width, height) = if height_ratio <= width_ratio && height_ratio < 1.0 {
+        (width * height_ratio, MAX_HEIGHT)
+    } else if width_ratio <= height_ratio && width_ratio < 1.0 {
+        (MAX_WIDTH, height * width_ratio)
+    } else {
+        (width, height)
+    };
+
+    let (width, height) = (width.round() as u32, height.round() as u32);
 
     let projection =
         from_control_points(closest.map(|p| (p.0 as f32, p.1 as f32)), (width, height))?;
